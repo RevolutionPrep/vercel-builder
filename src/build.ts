@@ -83,6 +83,8 @@ export async function build ({ files, entrypoint, workPath, config = {}, meta = 
   // ----------------- Install devDependencies -----------------
   startStep('Install devDependencies')
 
+  consola.log('Working directory:', process.cwd())
+
   // Prepare node_modules
   await fs.mkdirp('node_modules_dev')
   if (fs.existsSync('node_modules')) {
@@ -98,7 +100,6 @@ export async function build ({ files, entrypoint, workPath, config = {}, meta = 
       '--frozen-lockfile',
       '--non-interactive',
       '--production=false',
-      `--modules-folder=${rootDir}/node_modules`,
       `--cache-folder=${yarnCacheDir}`
     ], { ...spawnOpts, env: { ...spawnOpts.env, NODE_ENV: 'development' } })
   } else {
@@ -108,6 +109,9 @@ export async function build ({ files, entrypoint, workPath, config = {}, meta = 
   // ----------------- Pre build -----------------
   if (pkg.scripts && Object.keys(pkg.scripts).includes('now-build')) {
     startStep('Pre build')
+
+    consola.log('Working directory:', process.cwd())
+
     if (isYarn) {
       await exec('yarn', [
         'now-build'
@@ -182,7 +186,6 @@ export async function build ({ files, entrypoint, workPath, config = {}, meta = 
       '--pure-lockfile',
       '--non-interactive',
       '--production=true',
-      `--modules-folder=${rootDir}/node_modules`,
       `--cache-folder=${yarnCacheDir}`
     ], spawnOpts)
   } else {
